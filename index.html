@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Web firebase testing</title>
+
+        <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-database.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!--<script data-main="scripts/main" src="require.js"></script>-->
+        
+    </head>
+
+
+<body>
+
+    <div>
+        <input type="text" id="email" placeholder="example@gmail.com"><br></br>
+        <input type="text" id="password" placeholder="Enter password"><br></br>
+        <button id="login">Login</button><br></br>
+        <button id="forget">Forget password</button><br></br>
+    </div>
+
+
+    <script type="module">
+
+        
+            /*import * as admin from "./firebase-admin";
+                admin.initializeApp({
+                credential: admin.credential.applicationDefault(), // <= THIS!
+                databaseURL: "https://mindtech-ieeemdxthon-2023-default-rtdb.firebaseio.com/"
+                });
+            export const db = admin.database();*/
+
+        // #CONFIGURING WEB APP...
+        var firebaseConfig = {
+          apiKey: "AIzaSyCYm3viG-x4CtPtIjZJLl-FvkfELFhqIHA",
+          authDomain: "mindtech-ieeemdxthon-2023.firebaseapp.com",
+          databaseURL: "https://mindtech-ieeemdxthon-2023-default-rtdb.firebaseio.com/",
+          projectId: "mindtech-ieeemdxthon-2023",
+          storageBucket: "mindtech-ieeemdxthon-2023.appspot.com",
+          messagingSenderId: "929752976339",
+          appId: "1:929752976339:web:b8beb143e2135a0844bd26",
+          measurementId: "G-56NFBR8D6F"
+        };
+
+
+        // Initialize Firebase...
+        firebase.initializeApp(firebaseConfig);
+
+
+        var getPasswordFromDB;
+        var enteredEmail;
+        var enteredPassword;
+        var exists = false;
+
+
+        document.querySelector('#login').addEventListener('click', ()=>{
+
+            searchEmail(); 
+            
+            setTimeout(
+                    function(){ 
+                        alertExistEmail();
+                    }, 2000);
+
+            /*RETRIEVE ALL DATA UNDER THE ROOT NODE AS VALUE...
+            firebase.database().ref(path).on('value',(snap)=>{
+                console.log(snap.val());
+            });*/
+
+        });
+
+
+        document.querySelector('#forget').addEventListener('click', ()=>{
+
+            const { initializeApp } = require('firebase-admin/app');
+
+            /*admin.firestore().collection('messages').add({
+                to: '+23059185657',
+                body: 'Hello from Firebase!'
+            });*/
+
+            // Download the helper library from https://www.twilio.com/docs/node/install
+            // Set environment variables for your credentials
+            // Read more at http://twil.io/secure
+            const accountSid = "AC2428ba31e392295868f766146d4dbb69";
+            const authToken = "be8ac5895a9e2793462ce87910238b97";
+            const client = require("twilio")(accountSid, authToken);
+            client.messages
+            .create({ body: "Hello from Twilio", from: "+14065211762", to: "+23059185657" })
+                .then(message => console.log(message.sid));
+
+
+
+        });
+
+
+        
+
+
+        function searchEmail(){
+            enteredEmail = document.getElementById('email').value;
+            rootPath = "ROOTs/";
+            idPath = enteredEmail.replace(/.com*$/, ' ');
+            path = rootPath + idPath;
+            
+            firebase.database().ref(path + '/email').once("value", snapshot =>{
+                if(snapshot.exists()){
+                    getEmailFromDB = snapshot.val();
+                    exists = true;
+                }else{
+                    exists = false;
+                }
+            }); 
+        }
+
+        
+        
+        function alertExistEmail(){
+            if(exists){
+                authenticatePassword();
+            }else{
+                alert('No account is registered with this email. \nPlease sign up first.');
+            }
+        }
+
+
+
+        function authenticatePassword(){
+            enteredEmail = document.getElementById('email').value;
+            enteredPassword = document.getElementById('password').value;
+            rootPath = "ROOTs/";
+            idPath = enteredEmail.replace(/.com*$/, ' ');
+            path = rootPath + idPath;
+            
+            firebase.database().ref(path + '/password').once("value", snapshot =>{
+                if(snapshot.exists()){
+
+                    getPasswordFromDB = snapshot.val();
+                    if(enteredPassword === getPasswordFromDB){
+                        alert('password is correct.');
+                    }else{
+                        alert('password is incorrect.');
+                    }
+
+                }
+            }); 
+        }
+
+       
+    </script>
+
+</body>
+
+</html>
